@@ -24,6 +24,9 @@ def get_args():
         print('\nUsage: python3 light-client.py <HOST-IP> <PORT: int> lightbulb.operation <OPCODE> <COLOR> \n')
         quit(1)
 
+def request():
+    pass
+
 """
 def dns_lookup(client, table_address, host_name):
     pack_fmt = f'hhihh32s'
