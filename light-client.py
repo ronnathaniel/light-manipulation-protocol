@@ -42,11 +42,15 @@ def request(client, address, op):
         'result_len': 0,
         'op': bytes(op, 'utf-8'),
     }
-
+    if debug:
+        print("packing data here")
     packet = struct.pack(req_fmt, *list(data.values()))
 
-
+    if debug:
+        print("sending data here")
     client.sendto(packet, address)
+    if debug:
+        print("data sent")
 
     data, address = client.recvfrom(2048)
     if debug:
