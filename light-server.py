@@ -112,39 +112,6 @@ def serve_and_listen(server_s, bulb: LightBulb):
         server_s.sendto(packet, address)
 
 
-"""
-def handle_dns_requests (server):
-
-    table = _create_dns_table()
-
-    while 1:
-        pack_fmt = 'hhihh32s'
-
-        data, address = server.recvfrom(1024)
-        print(f'recieved from {address[0]}:{address[1]}')
-
-        request = struct.unpack(pack_fmt, data)
-        response = list(request)
-
-        question = request[-1].decode('utf8')
-
-        host = question.split(' ')[0]
-        answer = table.get(host, '')
-        if answer:
-            answer = answer.get('ip')
-
-        response[0] = 2  # message type reponse
-        response[1] = 0 if answer else 1  # return code
-        response[4] = len(answer)
-
-        answer = bytes(answer, encoding='utf8')
-        response.append(answer)
-        response = struct.pack(pack_fmt + '32s', *response)
-
-        print(f'sending to {address[0]}:{address[1]}\n')
-        server.sendto(response, address)
-"""
-
 def main ():
     host, port = get_args()
     server = socket(address_family, datagram)
