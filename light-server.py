@@ -52,8 +52,8 @@ def get_args():
 def serve_and_listen(server_s, bulb: LightBulb):
     if debug:
         print("serve/listen starts here")
-    req_fmt = 'hhihh32s'
-    res_fmt = 'hhihh32s32s'
+    req_fmt = 'hhihh64s'
+    res_fmt = 'hhihh64s64s'
 
     while 1:
         if debug:

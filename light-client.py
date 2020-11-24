@@ -7,9 +7,10 @@ from socket import (
 import struct
 from random import randint
 debug = True
-
+colour = ''
 
 def get_params():
+    global colour
     if debug:
         print("get params starts here")
     try:
@@ -19,7 +20,9 @@ def get_params():
         port = int(argv[2])
         address = (host, port)
         op = ' '.join(argv[3:])
-
+        colour = op[32:]
+        if debug:
+            print("host is %s, port is %s, op is %s, colour is %s" % (host, port, op, colour))
         return dict(address=address, op=op)
     except IndexError:
         if debug:
@@ -29,14 +32,16 @@ def get_params():
 
 
 def request(client, address, op):
+    global colour
     if debug:
         print("request starts here")
-    req_fmt = 'hhihh32s'
-    res_fmt = 'hhihh32s32s'
+    req_fmt = 'hhihh64s'
+    res_fmt = 'hhihh64s64s'
 
     data = {
         'message_type': 1,
         'return_code': 0,
+        #'colour': colour,
         'message_id': randint(0, 100),
         'op_len': len(op),
         'result_len': 0,
