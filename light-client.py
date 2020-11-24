@@ -1,8 +1,7 @@
-
 from sys import argv
 from socket import (
     socket,
-    timeout as TimeoutException,
+    # timeout as TimeoutException,
     AF_INET as address_family,
     SOCK_DGRAM as datagram
 )
@@ -10,22 +9,41 @@ import struct
 from random import randint
 
 
-
-def get_args():
+def get_params():
     try:
         host = argv[1]
         port = int(argv[2])
-        op_s = argv[3]
-        opcode = int(argv[4])
-        color = None if opcode is 3 else argv[5]
+        # address = f'{host}:{port}'
+        address = (host, port)
 
-        return host, port, op_s, opcode, color
+        op = ' '.join(argv[3:6])
+        print(op)
+
+        # opcode = int(argv[4])
+        # color = None if opcode is 3 else argv[5]
+
+        return dict(address=address, op=op)
     except IndexError:
         print('\nUsage: python3 light-client.py <HOST-IP> <PORT: int> lightbulb.operation <OPCODE> <COLOR> \n')
         quit(1)
 
-def request():
-    pass
+
+def request(client, address, op):
+    req_fmt = 'hhihh32s'
+    res_fmt = 'hhihh32s32s'
+
+    data = {
+        'message_type': 1,
+        'return_code': 0,
+        'message_id': randint(0, 100),
+        'op_len': len(op),
+        'result_len': 0,
+        'op': bytes(op, 'utf-8'),
+    }
+
+    packet = struct.pack(req_fmt, *list(data.values()))
+    client.sendto(packet, address)
+
 
 """
 def dns_lookup(client, table_address, host_name):
@@ -190,11 +208,11 @@ sock.close()
 
 """
 
+
 def main():
-    host, port, op_s, opcode, color = get_args()
     client = socket(address_family, datagram)
-    client.settimeout(1)
-    # dns_lookup(client, (host_dns, port), host_name)
+    # client.settimeout(1)
+    request(client, **get_params())
 
 
 main()

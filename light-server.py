@@ -10,7 +10,6 @@ import struct
 
 class LightBulb:
     def __init__(self):
-        self.status = 0
         self.color = None
 
     def turn_on(self, color):
@@ -20,7 +19,7 @@ class LightBulb:
         self.__init__()
 
     def is_on(self):
-        return bool(self.status)
+        return bool(self.color)
 
 
 def get_args():
@@ -44,6 +43,7 @@ def serve_and_listen(server_s):
         print(f'recieved from {address[0]}:{address[1]}')
 
         request = struct.unpack(req_fmt, data)
+        print(request)
 
 
 """
@@ -85,6 +85,7 @@ def main ():
     server.bind((host, port))
 
     print(f'server listening on {host}:{port}\n')
+    serve_and_listen(server)
     # handle_dns_requests(server)
 
 
