@@ -1,1 +1,1 @@
-python3 light-server.py localhost 5003
+python light-server.py localhost 5003
