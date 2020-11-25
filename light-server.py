@@ -6,7 +6,7 @@ from socket import (
     SOCK_DGRAM as datagram
 )
 import struct
-debug = True
+debug = False
 
 class LightBulb:
     if debug:
@@ -59,14 +59,12 @@ def serve_and_listen(server_s, bulb: LightBulb):
         if debug:
             print("while 1 starts here")
         data, address = server_s.recvfrom(1024)
-        print(f'recieved from {address[0]}:{address[1]}')
+        print(f'\nServing Request from {address[0]}:{address[1]}')
 
         request = struct.unpack(req_fmt, data)
-        # print(request)
 
         message_id = request[2]
         op_len = request[3]
-        # res_len = 0
         question = request[-1]
         answer_s = 'lightbulb.operation '
 
@@ -76,20 +74,19 @@ def serve_and_listen(server_s, bulb: LightBulb):
 
 
         op_code = int(question_s[0])
-        op_color = question_s[1]
+        op_color = None
+        if len(question_s) > 1:
+            op_color = question_s[1]
 
-        print(f'\ncode-{op_code}, color-{op_color}')
 
 
-        if op_code in [0, 1]:
+        if op_code in [1, 2]:
             err = bulb.turn_on(op_color)
 
             if err is not None:
-                print('entered err')
                 answer_s += f'{op_code} FAIL'
             else:
-                print('enteres else')
-                answer_s += f'{op_code} {"ON" if not op_code else "CHANGE"} SUCCESS'
+                answer_s += f'{op_code} {"ON" if op_code is 1 else "CHANGE"} SUCCESS'
         elif op_code == 3:
             color = bulb.status()
             if not color:
@@ -103,9 +100,7 @@ def serve_and_listen(server_s, bulb: LightBulb):
             else:
                 answer_s += f'OFF SUCCESS'
 
-        print(f'opcode - {op_code}')
 
-        print(f'answer_s - {answer_s} - {err}')
 
         res = {
             'message_type': 2,
@@ -118,8 +113,6 @@ def serve_and_listen(server_s, bulb: LightBulb):
         }
 
         packet = struct.pack(res_fmt, *list(res.values()))
-        print(packet)
-        print(*list(res.values()))
         server_s.sendto(packet, address)
 
 
@@ -132,7 +125,7 @@ def main ():
     # server.settimeout(1)
     bulb = LightBulb()
 
-    print(f'server listening on {host}:{port}\n')
+    print(f'\nServer listening on {host}:{port}\n')
     serve_and_listen(server, bulb)
 
 if debug:

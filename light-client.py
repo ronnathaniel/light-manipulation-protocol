@@ -6,7 +6,7 @@ from socket import (
 )
 import struct
 from random import randint
-debug = True
+debug = False
 colour = ''
 
 def get_params():
@@ -38,15 +38,23 @@ def request(client, address, op):
     req_fmt = 'hhihh64s'
     res_fmt = 'hhihh64s64s'
 
+    message_id = randint(0, 100)
+
     data = {
         'message_type': 1,
         'return_code': 0,
-        #'colour': colour,
-        'message_id': randint(0, 100),
+        'message_id': message_id,
         'op_len': len(op),
         'result_len': 0,
         'op': bytes(op, 'utf-8'),
     }
+
+    print(f'\nSending Request to {address[0]}:{address[1]}')
+    print(f'Message ID: {message_id}')
+    print(f'Operation Len: {len(op)}')
+    print(f'Result Len: {0}')
+    print(f'Operation: {op}')
+
     if debug:
         print("packing data here")
     packet = struct.pack(req_fmt, *list(data.values()))
@@ -60,8 +68,22 @@ def request(client, address, op):
     data, address = client.recvfrom(2048)
     if debug:
         print("testing received data")
-    print(data)
-    print(address)
+
+
+    response = struct.unpack(res_fmt, data)
+
+    return_code = response[1]
+    # answer_s = str(data[-1]).rstrip(r'\x00')
+    answer_s = response[-1].decode('utf-8')
+    # print(f'\nANSWER - \n{answer_s}\n')
+
+    print(f'\nRecieved Response from {address[0]}:{address[1]}')
+    print(f'Return Code: {return_code}')
+    print(f'Message ID: {message_id}')
+    print(f'Operation Len: {len(op)}')
+    print(f'Result Len: {len(answer_s)}')
+    print(f'Operation: {op}')
+    print(f'Result: {answer_s}')
 
 
 def main():
